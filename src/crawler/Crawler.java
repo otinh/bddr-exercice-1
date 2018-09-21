@@ -1,21 +1,25 @@
 package crawler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Crawler {
 
-   class Website {
-      private final int MAX_SPELL_ID = 1975;
-      private String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
+   private final String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
+   private final int MAX_ID = 1975;
 
-      public String url(int id) {
-         try {
-            return this.URL + id;
-         } catch (Exception e) {
-            System.out.println("Max ID reached at id=" + id);
-            return "";
-         }
-      }
+   private Set<String> visitedPages = new HashSet<>();
+
+   public String getURL(int id) {
+       return URL + id;
    }
 
+   public void searchSpells() {
 
+      for (int i = 1; i <= MAX_ID; i++) {
+         System.out.println(getURL(i));
+      }
+
+   }
 
 }

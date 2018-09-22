@@ -21,8 +21,6 @@ class Crawler {
         connectTo(url(id));
         HtmlParser parser = new HtmlParser(htmlDocument);
         var spell = parser.parseToJson();
-
-        System.out.println(spell);
     }
 
     void searchSpells() {
@@ -34,8 +32,6 @@ class Crawler {
             connectTo(url(id));
             HtmlParser parser = new HtmlParser(htmlDocument);
             var spell = parser.parseToJson();
-
-            System.out.println(spell);
         }
     }
 

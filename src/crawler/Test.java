@@ -4,7 +4,7 @@ public class Test {
 
     public static void main(String[] args) {
         var crawler = new Crawler();
-        crawler.searchSpell(123);
+        System.out.println(crawler.getSpell(12));
     }
 
 }

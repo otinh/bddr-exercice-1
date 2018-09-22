@@ -10,22 +10,24 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class HtmlParser {
+class SpellParser {
 
-    private Document document;
     private JsonObject spell;
 
     private Elements nameElements;
     private Elements detElements;
     private Elements descElements;
 
-    HtmlParser(Document document) {
-        this.document = document;
+    SpellParser(Document document) {
         this.nameElements = document.getElementsByClass("heading");
         this.detElements = document.getElementsByClass("SPDet");
         this.descElements = document.getElementsByClass("SPDesc");
     }
 
+    /*
+    * Parse toutes les informations de la page HTML d'un sort.
+    * @return le sort dans un format JSON.
+    * */
     JsonObject parseToJson() {
         spell = new JsonObject();
 
@@ -49,7 +51,7 @@ class HtmlParser {
     }
 
     private void parseSchool() {
-        var m = process("(?<=School ).*(?=;)");
+        var m = process(detElements, "(?<=School ).*(?=;)");
         if (m.find()) spell.addProperty("school", m.group());
     }
 
@@ -57,8 +59,12 @@ class HtmlParser {
         parseClassAndLevel("(?<=sorcerer\\/wizard )\\d", true);
     }
 
+    /*
+    * Note: si le sort n'est pas de classe "wizard", on prend la première classe (et niveau)
+    * parmi celles proposées dans la page.
+    * */
     private void parseClassAndLevel(String regex, boolean isWizardSpell) {
-        var m = process(regex);
+        var m = process(detElements, regex);
 
         if (m.find()) {
             if (isWizardSpell) {
@@ -75,16 +81,20 @@ class HtmlParser {
     }
 
     private void parseCastingTime() {
-        var m = process("(?<=Casting Time ).*", detElements.get(1));
+        var m = process(detElements.get(1), "(?<=Casting Time ).*");
         if (m.find()) spell.addProperty("casting_time", m.group());
     }
 
+    /*
+    * Note: on ne prend pas en compte les composants "M/DF" et "F/DF"
+    * */
     private void parseComponents() {
         var components = new JsonArray();
         var letters = new String[]{"V", "S", "M", "F", "XP"};
 
-        String text = detElements.get(2).text();
-        Arrays.stream(letters).filter(text::contains).forEach(components::add);
+        Arrays.stream(letters)
+                .filter(detElements.get(2).text()::contains)
+                .forEach(components::add);
         spell.add("components", components);
     }
 
@@ -92,7 +102,7 @@ class HtmlParser {
         for (var element : detElements) {
             if (!element.text().contains("Spell Resistance")) continue;
 
-            var m = process("(?<=Resistance )[yesno]+", element);
+            var m = process(element, "(?<=Resistance )[yesno]+");
             if (m.find()) spell.addProperty("spell_resistance", m.group().equals("yes"));
             return;
         }
@@ -104,14 +114,18 @@ class HtmlParser {
         spell.addProperty("description", descElements.get(0).text());
     }
 
-    private Matcher process(String regex) {
-        var p = Pattern.compile(regex);
-        return p.matcher(detElements.first().text());
+    /*
+    * Applique une expression régulière à un Element.
+    * */
+    private Matcher process(Element element, String regex) {
+        return Pattern.compile(regex).matcher(element.text());
     }
 
-    private Matcher process(String regex, Element element) {
-        var p = Pattern.compile(regex);
-        return p.matcher(element.text());
+    /*
+     * Applique une expression régulière à un Elements.
+     * */
+    private Matcher process(Elements elements, String regex) {
+        return Pattern.compile(regex).matcher(elements.first().text());
     }
 
 }

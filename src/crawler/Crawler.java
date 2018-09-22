@@ -1,51 +1,60 @@
 package crawler;
 
-import org.jsoup.Connection;
+import com.google.gson.JsonObject;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Crawler {
 
     private final String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
     private final int MAX_ID = 1975;
 
-    private Document htmlDocument;
-
     private String url(int id) {
         return URL + id;
     }
 
-    void searchSpell(int id) {
-        connectTo(url(id));
-        HtmlParser parser = new HtmlParser(htmlDocument);
-        var spell = parser.parseToJson();
-    }
-
-    void searchSpells() {
-        searchSpells(MAX_ID);
-    }
-
-    private void searchSpells(int limit) {
-        for (var id = 1; id <= limit; id++) {
-            connectTo(url(id));
-            HtmlParser parser = new HtmlParser(htmlDocument);
-            var spell = parser.parseToJson();
-        }
+    /*
+    * Retourne un sort en particulier.
+    * */
+    JsonObject getSpell(int id) {
+        return Objects.requireNonNull(getSpellInfo(id));
     }
 
     /*
-    * Enregistre la page web dans un Document qui sera traité après.
-    * @param url lien vers le site concerné
+    * Retourne tous les sorts existants.
     * */
-    private void connectTo(String url) {
+    List<JsonObject> getSpells() {
+        return getSpells(MAX_ID);
+    }
+
+    /*
+    * Retourne les X premiers sorts existants.
+    * @param size = X
+    * */
+    List<JsonObject> getSpells(int size) {
+        return IntStream.rangeClosed(1, size)
+                .mapToObj(id -> Objects.requireNonNull(getSpellInfo(id)))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /*
+    * @return les informations d'un sort à l'aide de son ID.
+    * */
+    private JsonObject getSpellInfo(int id) {
         try {
-            Connection connection = Jsoup.connect(url);
-            htmlDocument = connection.get();
+            var connection = Jsoup.connect(url(id));
+            return new SpellParser(connection.get()).parseToJson();
         } catch (IOException e) {
             System.err.println("Error in HTTP request: " + e);
         }
+        System.err.println("Could not get spell info for ID=" + id);
+        return null;
     }
 
 }

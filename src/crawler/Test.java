@@ -3,7 +3,8 @@ package crawler;
 public class Test {
 
     public static void main(String[] args) {
-        System.out.println("Hello world");
+        var crawler = new Crawler();
+        crawler.searchSpell(123);
     }
 
 }

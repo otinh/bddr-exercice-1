@@ -29,7 +29,7 @@ class Crawler {
         searchSpells(MAX_ID);
     }
 
-    void searchSpells(int limit) {
+    private void searchSpells(int limit) {
         for (var id = 1; id <= limit; id++) {
             connectTo(url(id));
             HtmlParser parser = new HtmlParser(htmlDocument);
@@ -39,6 +39,10 @@ class Crawler {
         }
     }
 
+    /*
+    * Enregistre la page web dans un Document qui sera traité après.
+    * @param url lien vers le site concerné
+    * */
     private void connectTo(String url) {
         try {
             Connection connection = Jsoup.connect(url);

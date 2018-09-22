@@ -16,22 +16,30 @@ class HtmlParser {
     private JsonObject spell;
 
     private Elements nameElements;
-    private Elements statElements;
+    private Elements detElements;
+    private Elements descElements;
 
     HtmlParser(Document document) {
         this.document = document;
         this.nameElements = document.getElementsByClass("heading");
-        this.statElements = document.getElementsByClass("SPDet");
+        this.detElements = document.getElementsByClass("SPDet");
+        this.descElements = document.getElementsByClass("SPDesc");
     }
 
     JsonObject parseToJson() {
         spell = new JsonObject();
 
+        // Main info
         parseName();
         parseSchool();
         parseClassAndLevel();
+        // Casting
+        parseCastingTime();
         parseComponents();
+        // Effect
         parseSpellResistance();
+        // Description
+        parseDescription();
 
         return spell;
     }
@@ -66,19 +74,22 @@ class HtmlParser {
         }
     }
 
+    private void parseCastingTime() {
+        var m = process("(?<=Casting Time ).*", detElements.get(1));
+        if (m.find()) spell.addProperty("casting_time", m.group());
+    }
+
     private void parseComponents() {
-        var spellComponents = document.getElementsByClass("SPDet");
         var components = new JsonArray();
         var letters = new String[]{"V", "S", "M", "F", "XP"};
 
-        String text = spellComponents.get(2).text();
+        String text = detElements.get(2).text();
         Arrays.stream(letters).filter(text::contains).forEach(components::add);
-
         spell.add("components", components);
     }
 
     private void parseSpellResistance() {
-        for (var element : statElements) {
+        for (var element : detElements) {
             if (!element.text().contains("Spell Resistance")) continue;
 
             var m = process("(?<=Resistance )[yesno]+", element);
@@ -89,9 +100,13 @@ class HtmlParser {
         spell.addProperty("spell_resistance", false);
     }
 
+    private void parseDescription() {
+        spell.addProperty("description", descElements.get(0).text());
+    }
+
     private Matcher process(String regex) {
         var p = Pattern.compile(regex);
-        return p.matcher(statElements.first().text());
+        return p.matcher(detElements.first().text());
     }
 
     private Matcher process(String regex, Element element) {

@@ -6,7 +6,6 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,7 +22,7 @@ class Crawler {
     * Retourne un sort en particulier.
     * */
     JsonObject getSpell(int id) {
-        return Objects.requireNonNull(getSpellInfo(id));
+        return getSpellInfo(id);
     }
 
     /*
@@ -39,12 +38,14 @@ class Crawler {
     * */
     List<JsonObject> getSpells(int size) {
         return IntStream.rangeClosed(1, size)
-                .mapToObj(id -> Objects.requireNonNull(getSpellInfo(id)))
+                .mapToObj(this::getSpellInfo)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /*
-    * @return les informations d'un sort à l'aide de son ID.
+    * Récupère les informations de la page HTML concernant le sort, puis le transforme
+    * en JSON.
+    * @return le sort en JSON
     * */
     private JsonObject getSpellInfo(int id) {
         try {
@@ -53,7 +54,6 @@ class Crawler {
         } catch (IOException e) {
             System.err.println("Error in HTTP request: " + e);
         }
-        System.err.println("Could not get spell info for ID=" + id);
         return null;
     }
 

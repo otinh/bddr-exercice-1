@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eclipse-userlibraries />
+<eclipse-userlibraries>
+  <library name="com.google.code.gson:gson:2.8.5">
+    <archive path="C:/Users/olivi/.m2/repository/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" />
+  </library>
+  <library name="org.jsoup:jsoup:1.11.3">
+    <archive path="C:/Users/olivi/.m2/repository/org/jsoup/jsoup/1.11.3/jsoup-1.11.3.jar" />
+  </library>
+  <library name="org.mongodb:mongodb-driver-sync:3.8.2">
+    <archive path="C:/Users/olivi/.m2/repository/org/mongodb/mongodb-driver-sync/3.8.2/mongodb-driver-sync-3.8.2.jar" />
+    <archive path="C:/Users/olivi/.m2/repository/org/mongodb/bson/3.8.2/bson-3.8.2.jar" />
+    <archive path="C:/Users/olivi/.m2/repository/org/mongodb/mongodb-driver-core/3.8.2/mongodb-driver-core-3.8.2.jar" />
+  </library>
+</eclipse-userlibraries>
 

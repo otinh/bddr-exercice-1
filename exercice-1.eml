@@ -3,4 +3,9 @@
 	<output-test url="file://$MODULE_DIR$/out/test/exercice-1"/>
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$"/>
+	<levels>
+		<level name="com.google.code.gson:gson:2.8.5" value="project"/>
+		<level name="org.jsoup:jsoup:1.11.3" value="project"/>
+		<level name="org.mongodb:mongodb-driver-sync:3.8.2" value="project"/>
+	</levels>
 </component>

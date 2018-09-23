@@ -10,5 +10,6 @@
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="org.jsoup:jsoup:1.11.3" level="project" />
     <orderEntry type="library" name="org.mongodb:mongodb-driver-sync:3.8.2" level="project" />
+    <orderEntry type="library" name="me.tongfei:progressbar:0.7.1" level="project" />
   </component>
 </module>

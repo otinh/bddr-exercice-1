@@ -71,7 +71,7 @@ class SpellParser {
     }
 
     private void parseSchool() {
-        var m = process(detElements, "(?<=School ).*(?=;)");
+        var m = process(detElements.get(0), "(?<=School ).*(?=;)");
         if (m.find()) spell.addProperty("school", m.group());
     }
 
@@ -84,7 +84,7 @@ class SpellParser {
     * parmi celles proposées dans la page.
     * */
     private void parseClassAndLevel(String regex, boolean isWizardSpell) {
-        var m = process(detElements, regex);
+        var m = process(detElements.get(0), regex);
 
         if (m.find()) {
             if (isWizardSpell) {
@@ -183,14 +183,6 @@ class SpellParser {
     private Matcher process(Element element, String regex) {
         if (element == null) return null;
         return Pattern.compile(regex).matcher(element.text());
-    }
-
-    /*
-     * Applique une expression régulière à un Elements.
-     * */
-    private Matcher process(Elements elements, String regex) {
-        if (elements == null) return null;
-        return Pattern.compile(regex).matcher(elements.first().text());
     }
 
 }

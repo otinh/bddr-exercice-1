@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 public class CrawlerTest {
 
     public static void main(String[] args) {
-        printSpell(193);
+        //printSpells(1945);
     }
 
     private static void printSpell(int id) {

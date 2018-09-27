@@ -9,26 +9,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class Crawler {
+public class Crawler {
 
-    private final String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
-    private final int MAX_ID = 1975;
+    private static final String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
+    private static final int MAX_ID = 1975;
 
-    private String url(int id) {
+    private static String url(int id) {
         return URL + id;
     }
 
     /*
     * Retourne un sort en particulier.
     * */
-    JsonObject getSpell(int id) {
+    public static JsonObject getSpell(int id) {
         return getSpellInfo(id);
     }
 
     /*
     * Retourne tous les sorts existants.
     * */
-    List<JsonObject> getSpells() {
+    public static List<JsonObject> getSpells() {
         return getSpells(MAX_ID);
     }
 
@@ -36,9 +36,9 @@ class Crawler {
     * Retourne les X premiers sorts existants.
     * @param size = X
     * */
-    List<JsonObject> getSpells(int size) {
+    public static List<JsonObject> getSpells(int size) {
         return IntStream.rangeClosed(1, size)
-                .mapToObj(this::getSpellInfo)
+                .mapToObj(Crawler::getSpellInfo)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -47,7 +47,7 @@ class Crawler {
     * en JSON.
     * @return le sort en JSON
     * */
-    private JsonObject getSpellInfo(int id) {
+    private static JsonObject getSpellInfo(int id) {
         try {
             var connection = Jsoup.connect(url(id));
             return new SpellParser(connection.get()).parseToJson();

@@ -149,7 +149,7 @@ class SpellParser {
     }
 
     private void parseSavingThrow() {
-        var m = process(findElement("Saving Throw", detElements), "(?<=Saving Throw )[a-zA-Z ]+(?=;)");
+        var m = process(findElement("Saving Throw", detElements), "(?<=Saving Throw )[a-zA-Z(), ]+(?=;)");
         if (m != null && m.find()) spell.append("saving_throw", m.group());
     }
 

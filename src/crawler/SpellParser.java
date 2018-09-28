@@ -1,24 +1,22 @@
 package crawler;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.jsoup.nodes.Document;
+import org.bson.*;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class SpellParser {
 
-    private JsonObject spell;
+    private org.bson.Document spell;
 
     private Elements nameElements;
     private Elements detElements;
     private Elements descElements;
 
-    SpellParser(Document document) {
+    SpellParser(org.jsoup.nodes.Document document) {
         this.nameElements = document.getElementsByClass("heading");
         this.detElements = document.getElementsByClass("SPDet");
         this.descElements = document.getElementsByClass("SPDesc");
@@ -28,10 +26,10 @@ class SpellParser {
     * Parse toutes les informations de la page HTML d'un sort.
     * @return le sort dans un format JSON.
     * */
-    JsonObject parseToJson() {
+    Document parseToJson() {
         if (isInvalidHtml()) return null;
 
-        spell = new JsonObject();
+        spell = new org.bson.Document();
 
         // Main info
         parseName();
@@ -67,12 +65,12 @@ class SpellParser {
     }
 
     private void parseName() {
-        spell.addProperty("name", nameElements.first().text());
+        spell.append("name", nameElements.first().text());
     }
 
     private void parseSchool() {
         var m = process(detElements.get(0), "(?<=School ).*(?=;)");
-        if (m.find()) spell.addProperty("school", m.group());
+        if (m.find()) spell.append("school", m.group());
     }
 
     private void parseClassAndLevel() {
@@ -88,11 +86,11 @@ class SpellParser {
 
         if (m.find()) {
             if (isWizardSpell) {
-                spell.addProperty("class", "wizard");
-                spell.addProperty("level", m.group());
+                spell.append("class", "wizard");
+                spell.append("level", m.group());
             } else {
-                spell.addProperty("class", m.group(1));
-                spell.addProperty("level", m.group(2));
+                spell.append("class", m.group(1));
+                spell.append("level", m.group(2));
             }
         } else {
             assert isWizardSpell : "Could not find spell class or level";
@@ -102,67 +100,74 @@ class SpellParser {
 
     private void parseCastingTime() {
         var m = process(detElements.get(1), "(?<=Casting Time ).*");
-        if (m.find()) spell.addProperty("casting_time", m.group());
+        if (m.find()) spell.append("casting_time", m.group());
     }
 
     /*
     * Note: on ne prend pas en compte les composants "M/DF" et "F/DF"
     * */
     private void parseComponents() {
-        var components = new JsonArray();
-        var letters = new String[]{"V", "S", "M", "F", "XP"};
+        var letters = new ArrayList<String>();
 
-        Arrays.stream(letters)
-                .filter(detElements.get(2).text()::contains)
-                .forEach(components::add);
-        spell.add("components", components);
+        if (detElements.get(2).text().contains("V"))
+            letters.add("V");
+        if (detElements.get(2).text().contains("S"))
+            letters.add("S");
+        if (detElements.get(2).text().contains("M"))
+            letters.add("M");
+        if (detElements.get(2).text().contains("F"))
+            letters.add("F");
+        if (detElements.get(2).text().contains("XP"))
+            letters.add("XP");
+
+        spell.append("components", letters);
     }
 
     private void parseRange() {
         var m = process(detElements.get(3), "(?<=Range ).*");
-        if (m != null && m.find()) spell.addProperty("range", m.group());
+        if (m != null && m.find()) spell.append("range", m.group());
     }
 
     private void parseArea() {
         var m = process(findElement("Area", detElements), "(?<=Area ).*");
-        if (m != null && m.find()) spell.addProperty("area", m.group());
+        if (m != null && m.find()) spell.append("area", m.group());
     }
 
     private void parseEffect() {
         var m = process(findElement("Effect", detElements), "(?<=Effect ).*");
-        if (m != null && m.find()) spell.addProperty("effect", m.group());
+        if (m != null && m.find()) spell.append("effect", m.group());
     }
 
     private void parseTargets() {
         var m = process(findElement("Targets", detElements), "(?<=Targets ).*");
-        if (m != null && m.find()) spell.addProperty("targets", m.group());
+        if (m != null && m.find()) spell.append("targets", m.group());
     }
 
     private void parseDuration() {
         var m = process(findElement("Duration", detElements), "(?<=Duration ).*");
-        if (m != null && m.find()) spell.addProperty("duration", m.group());
+        if (m != null && m.find()) spell.append("duration", m.group());
     }
 
     private void parseSavingThrow() {
         var m = process(findElement("Saving Throw", detElements), "(?<=Saving Throw )[a-zA-Z ]+(?=;)");
-        if (m != null && m.find()) spell.addProperty("saving_throw", m.group());
+        if (m != null && m.find()) spell.append("saving_throw", m.group());
     }
 
     private void parseSpellResistance() {
         var m = process(findElement("Spell Resistance", detElements), "(?<=Resistance )[yesno]+");
         if (m != null && m.find())
-            spell.addProperty("spell_resistance", m.group().equals("yes"));
+            spell.append("spell_resistance", m.group().equals("yes"));
         else
-            spell.addProperty("spell_resistance", false);
+            spell.append("spell_resistance", false);
     }
 
     private void parseDescription() {
-        spell.addProperty("description", descElements.get(0).text());
+        spell.append("description", descElements.get(0).text());
     }
 
     private void parseDomain() {
         if (descElements.size() < 2) return;
-        spell.addProperty("domain", descElements.get(1).text());
+        spell.append("domain", descElements.get(1).text());
     }
 
     /*

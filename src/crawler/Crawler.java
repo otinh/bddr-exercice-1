@@ -1,6 +1,6 @@
 package crawler;
 
-import com.google.gson.JsonObject;
+import org.bson.Document;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
@@ -21,14 +21,14 @@ public class Crawler {
     /*
     * Retourne un sort en particulier.
     * */
-    public static JsonObject getSpell(int id) {
+    public static Document getSpell(int id) {
         return getSpellInfo(id);
     }
 
     /*
     * Retourne tous les sorts existants.
     * */
-    public static List<JsonObject> getSpells() {
+    public static List<Document> getSpells() {
         return getSpells(MAX_ID);
     }
 
@@ -36,7 +36,7 @@ public class Crawler {
     * Retourne les X premiers sorts existants.
     * @param size = X
     * */
-    public static List<JsonObject> getSpells(int size) {
+    public static List<Document> getSpells(int size) {
         return IntStream.rangeClosed(1, size)
                 .mapToObj(Crawler::getSpellInfo)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -47,7 +47,7 @@ public class Crawler {
     * en JSON.
     * @return le sort en JSON
     * */
-    private static JsonObject getSpellInfo(int id) {
+    private static org.bson.Document getSpellInfo(int id) {
         try {
             var connection = Jsoup.connect(url(id));
             return new SpellParser(connection.get()).parseToJson();

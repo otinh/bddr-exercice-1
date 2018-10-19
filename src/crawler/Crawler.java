@@ -12,6 +12,11 @@ import java.util.stream.IntStream;
 public class Crawler {
 
     private static final String URL = "http://www.dxcontent.com/SDB_SpellBlock.asp?SDBID=";
+
+    public static int getMaxId() {
+        return MAX_ID;
+    }
+
     private static final int MAX_ID = 1975;
 
     private static String url(int id) {

@@ -7,23 +7,23 @@ import org.bson.Document;
 
 import java.util.List;
 
-public class Database {
+public class MongoDatabase {
 
-    private MongoCollection<Document> spells;
+    MongoCollection<Document> spells;
 
     private Block<Document> printBlock = document -> System.out.println(document.toJson());
 
-    private Database() {
+    private MongoDatabase() {
         var client = MongoClients.create();
         var database = client.getDatabase("spellDB");
         spells = database.getCollection("spells");
     }
 
     private static class DatabaseHolder {
-        private static final Database INSTANCE = new Database();
+        private static final MongoDatabase INSTANCE = new MongoDatabase();
     }
 
-    public static Database getInstance() {
+    public static MongoDatabase getInstance() {
         return DatabaseHolder.INSTANCE;
     }
 

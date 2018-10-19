@@ -154,7 +154,7 @@ class SpellParser {
     }
 
     private void parseSpellResistance() {
-        var m = process(findElement("Spell Resistance", detElements), "(?<=Resistance )[yesno]+");
+        var m = process(findElement("crawler.Spell Resistance", detElements), "(?<=Resistance )[yesno]+");
         if (m != null && m.find())
             spell.append("spell_resistance", m.group().equals("yes"));
         else
